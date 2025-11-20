@@ -1,12 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
-
-// Relax types so TS doesn't complain about props on these components
-const AnyMapContainer = MapContainer as any;
-const AnyTileLayer = TileLayer as any;
-const AnyCircleMarker = CircleMarker as any;
-const AnyPopup = Popup as any;
+import { useEffect, useState } from "react";
 
 type Jam = {
   id: number;
@@ -21,12 +15,54 @@ type Jam = {
   event_kind: string | null;
 };
 
+type LeafletComponents = {
+  MapContainer: any;
+  TileLayer: any;
+  CircleMarker: any;
+  Popup: any;
+};
+
 export default function MapView({ jams }: { jams: Jam[] }) {
+  const [leaflet, setLeaflet] = useState<LeafletComponents | null>(null);
+
+  // Only load react-leaflet on the client
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadLeaflet() {
+      const L = await import("react-leaflet");
+      if (!mounted) return;
+
+      setLeaflet({
+        MapContainer: L.MapContainer,
+        TileLayer: L.TileLayer,
+        CircleMarker: L.CircleMarker,
+        Popup: L.Popup,
+      });
+    }
+
+    loadLeaflet();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // While loading the map lib, keep layout stable
+  if (!leaflet) {
+    return (
+      <div className="h-full w-full flex items-center justify-center text-sm text-slate-400">
+        Loading map…
+      </div>
+    );
+  }
+
+  const { MapContainer, TileLayer, CircleMarker, Popup } = leaflet;
+
   const points = (jams || []).filter(
     (jam) => jam.latitude !== null && jam.longitude !== null
   );
 
-  // Default to SF Bay if nothing has coords yet
   const defaultCenter: [number, number] = [37.7749, -122.4194];
 
   const center: [number, number] =
@@ -35,25 +71,25 @@ export default function MapView({ jams }: { jams: Jam[] }) {
       : defaultCenter;
 
   return (
-    <div className="mb-6 h-[420px] w-full overflow-hidden rounded-md border border-slate-800">
-      <AnyMapContainer
+    <div className="h-full w-full">
+      <MapContainer
         center={center}
         zoom={8}
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
       >
-        <AnyTileLayer
+        <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
         {points.map((jam) => (
-          <AnyCircleMarker
+          <CircleMarker
             key={jam.id}
             center={[jam.latitude as number, jam.longitude as number]}
             radius={6}
           >
-            <AnyPopup>
+            <Popup>
               <div className="text-sm">
                 <div className="font-semibold">
                   {jam.event_name || "Untitled event"}
@@ -69,10 +105,10 @@ export default function MapView({ jams }: { jams: Jam[] }) {
                     .join(" • ")}
                 </div>
               </div>
-            </AnyPopup>
-          </AnyCircleMarker>
+            </Popup>
+          </CircleMarker>
         ))}
-      </AnyMapContainer>
+      </MapContainer>
     </div>
   );
 }
