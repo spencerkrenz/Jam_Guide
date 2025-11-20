@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import RegionFilter from "./RegionFilter";
 import MapView from "./MapView";
+import Link from "next/link";
 
 type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -65,7 +66,7 @@ export default async function Home({
 
   const jams = data ?? [];
 
-  return (
+    return (
     <main className="relative h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
       {/* Full-screen map in the background */}
       <div className="absolute inset-0 z-0">
@@ -74,15 +75,21 @@ export default async function Home({
 
       {/* Overlay content on top of the map */}
       <div className="pointer-events-none relative z-10 flex h-full flex-col">
-        {/* Top bar: title + filters */}
+        {/* Top bar: title + filters + calendar view */}
         <header className="pointer-events-auto relative z-20 flex items-center justify-between p-4">
           <h1 className="text-2xl font-bold drop-shadow">
             Jam Guide – Northern California
           </h1>
 
-          {/* Right side: filters (later we’ll add “View all listings” next to this) */}
+          {/* Right side: Filters + Calendar View */}
           <div className="flex gap-2">
             <RegionFilter />
+            <Link
+              href="/calendar"
+              className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800"
+            >
+              Calendar View
+            </Link>
           </div>
         </header>
 
