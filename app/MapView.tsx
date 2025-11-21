@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type Jam = {
-  id: number;
+  id: number | null; // Supabase primary key
   latitude: number | null;
   longitude: number | null;
   event_name: string | null;
@@ -51,7 +52,7 @@ export default function MapView({ jams }: { jams: Jam[] }) {
   // While loading the map lib, keep layout stable
   if (!leaflet) {
     return (
-      <div className="h-full w-full flex items-center justify-center text-sm text-slate-400">
+      <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">
         Loading map…
       </div>
     );
@@ -83,31 +84,48 @@ export default function MapView({ jams }: { jams: Jam[] }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {points.map((jam) => (
-          <CircleMarker
-            key={jam.id}
-            center={[jam.latitude as number, jam.longitude as number]}
-            radius={6}
-          >
-            <Popup>
-              <div className="text-sm">
-                <div className="font-semibold">
-                  {jam.event_name || "Untitled event"}
+        {points.map((jam, idx) => {
+          const hasValidId =
+            typeof jam.id === "number" && Number.isFinite(jam.id);
+          const markerKey = hasValidId ? jam.id! : idx;
+
+          return (
+            <CircleMarker
+              key={markerKey}
+              center={[jam.latitude as number, jam.longitude as number]}
+              radius={6}
+            >
+              <Popup>
+                <div className="text-sm">
+                  <div className="font-semibold">
+                    {jam.event_name || "Untitled event"}
+                  </div>
+                  <div className="text-xs text-slate-600">
+                    {[jam.venue_name, jam.city, jam.region]
+                      .filter(Boolean)
+                      .join(" • ")}
+                  </div>
+                  <div className="mt-1 text-xs">
+                    {[jam.event_kind, jam.primary_genre, jam.skill_level]
+                      .filter(Boolean)
+                      .join(" • ")}
+                  </div>
+
+                  {hasValidId && (
+                    <div className="mt-2">
+                      <Link
+                        href={`/jam/${jam.id}`}
+                        className="text-xs text-blue-500 hover:underline"
+                      >
+                        View details
+                      </Link>
+                    </div>
+                  )}
                 </div>
-                <div className="text-xs text-slate-600">
-                  {[jam.venue_name, jam.city, jam.region]
-                    .filter(Boolean)
-                    .join(" • ")}
-                </div>
-                <div className="mt-1 text-xs">
-                  {[jam.event_kind, jam.primary_genre, jam.skill_level]
-                    .filter(Boolean)
-                    .join(" • ")}
-                </div>
-              </div>
-            </Popup>
-          </CircleMarker>
-        ))}
+              </Popup>
+            </CircleMarker>
+          );
+        })}
       </MapContainer>
     </div>
   );
