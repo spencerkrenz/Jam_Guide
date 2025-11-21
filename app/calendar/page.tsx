@@ -4,6 +4,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import RegionFilter from "../RegionFilter";
 
+
 type Jam = {
   id: number;
   event_name: string | null;
