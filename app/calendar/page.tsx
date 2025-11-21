@@ -383,6 +383,10 @@ export default async function CalendarPage({
 
               const day = cell.date;
               const jamsForDay = jamsByDate[day] ?? [];
+              const isToday =
+                year === now.getFullYear() &&
+                monthIndex === now.getMonth() &&
+                day === now.getDate();
 
               return (
                 <div
@@ -391,7 +395,15 @@ export default async function CalendarPage({
                 >
                   {/* Day number + count */}
                   <div className="mb-1 flex items-center justify-between text-[11px] font-semibold text-amber-300">
-                    <span>{day}</span>
+                    <span
+                      className={`inline-flex h-7 w-7 items-center justify-center rounded-full ${
+                        isToday
+                          ? "bg-blue-600/90 text-white ring-2 ring-blue-300/60"
+                          : ""
+                      }`}
+                    >
+                      {day}
+                    </span>
                     {jamsForDay.length > 0 && (
                       <span className="rounded bg-slate-800 px-1 text-[10px] text-slate-200">
                         {jamsForDay.length}
