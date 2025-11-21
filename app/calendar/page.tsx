@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import RegionFilter from "../RegionFilter";
 
 type Jam = {
   id: number;
@@ -24,6 +25,15 @@ type Jam = {
 };
 
 type SearchParams = { [key: string]: string | string[] | undefined };
+
+function parseListParam(raw: string | string[] | undefined): string[] {
+  if (!raw) return [];
+  const str = Array.isArray(raw) ? raw[0] : raw;
+  return str
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
 
 // Sunday-first like your reference calendar
 const DAYS: { key: string; label: string }[] = [
@@ -64,6 +74,12 @@ function parseWeeksOfMonth(weeks: string | null): number[] {
     .split(",")
     .map((s) => parseInt(s.trim(), 10))
     .filter((n) => !Number.isNaN(n) && n >= 1 && n <= 5);
+}
+
+// Format Supabase time ("19:00:00") into "19:00"
+function formatTime(t: string | null): string {
+  if (!t) return "";
+  return t.slice(0, 5);
 }
 
 function occursOnDate(jam: Jam, date: Date): boolean {
@@ -156,6 +172,15 @@ export default async function CalendarPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
+  const baseParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (!value) return;
+    if (Array.isArray(value)) {
+      value.forEach((v) => baseParams.append(key, v));
+    } else {
+      baseParams.set(key, value);
+    }
+  });
 
   // 1. Determine which month to show from URL, default to current
   const now = new Date();
@@ -190,11 +215,62 @@ export default async function CalendarPage({
   const nextYear = nextMonthDate.getFullYear();
   const nextMonth = nextMonthDate.getMonth() + 1; // 1–12
 
+  // 1b. Parse filters from query params
+  const regions = parseListParam(params.regions);
+  const cities = parseListParam(params.cities);
+  const greaterRegions = parseListParam(params.greater_regions);
+  const dows = parseListParam(params.dow);
+  const timeOfDay = parseListParam(params.tod);
+  const genres = parseListParam(params.genres);
+  const skills = parseListParam(params.skills);
+  const invite = parseListParam(params.invite);
+  const crowd = parseListParam(params.crowd);
+  const coverType = parseListParam(params.cover_type);
+  const kinds = parseListParam(params.kind);
+  const freq = parseListParam(params.freq);
+
+  const isHouseJamOnly =
+    params.is_house_jam === "true" || params.is_house_jam === "1";
+  const includesDancingOnly =
+    params.dancing === "true" || params.dancing === "1";
+
+  const filtersOnlyParams = new URLSearchParams(baseParams.toString());
+  filtersOnlyParams.delete("year");
+  filtersOnlyParams.delete("month");
+
+  const prevParams = new URLSearchParams(filtersOnlyParams.toString());
+  prevParams.set("year", String(prevYear));
+  prevParams.set("month", String(prevMonth));
+  const prevHref = `/calendar?${prevParams.toString()}`;
+
+  const nextParams = new URLSearchParams(filtersOnlyParams.toString());
+  nextParams.set("year", String(nextYear));
+  nextParams.set("month", String(nextMonth));
+  const nextHref = `/calendar?${nextParams.toString()}`;
+
+  const mapHref = filtersOnlyParams.toString()
+    ? `/?${filtersOnlyParams.toString()}`
+    : "/";
+
   // 2. Fetch all active jams (we could narrow the columns, but * is fine for now)
-  const { data, error } = await supabase
-    .from("jams")
-    .select("*")
-    .eq("status", "active");
+  let query = supabase.from("jams").select("*").eq("status", "active");
+
+  if (regions.length > 0) query = query.in("region", regions);
+  if (cities.length > 0) query = query.in("city", cities);
+  if (greaterRegions.length > 0) query = query.in("greater_region", greaterRegions);
+  if (isHouseJamOnly) query = query.eq("is_house_jam", true);
+  if (dows.length > 0) query = query.in("day_of_week", dows);
+  if (timeOfDay.length > 0) query = query.in("time_of_day", timeOfDay);
+  if (genres.length > 0) query = query.in("primary_genre", genres);
+  if (skills.length > 0) query = query.in("skill_level", skills);
+  if (invite.length > 0) query = query.in("invite_status", invite);
+  if (crowd.length > 0) query = query.in("avg_crowd_size", crowd);
+  if (coverType.length > 0) query = query.in("cover_charge_type", coverType);
+  if (includesDancingOnly) query = query.eq("includes_dancing", true);
+  if (kinds.length > 0) query = query.in("event_kind", kinds);
+  if (freq.length > 0) query = query.in("frequency", freq);
+
+  const { data, error } = await query.order("event_name", { ascending: true });
 
   if (error) {
     console.error("Error loading jams for calendar:", error.message);
@@ -244,13 +320,13 @@ export default async function CalendarPage({
         <div className="flex items-center gap-2">
           {/* Prev / Next month arrows */}
           <Link
-            href={`/calendar?year=${prevYear}&month=${prevMonth}`}
+            href={prevHref}
             className="rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-sm hover:bg-slate-800"
           >
             ←
           </Link>
           <Link
-            href={`/calendar?year=${nextYear}&month=${nextMonth}`}
+            href={nextHref}
             className="rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-sm hover:bg-slate-800"
           >
             →
@@ -262,9 +338,16 @@ export default async function CalendarPage({
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex items-start gap-2">
+          <RegionFilter />
           <Link
-            href="/"
+            href="/submit"
+            className="rounded-md border border-blue-500/50 bg-blue-600/90 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-500"
+          >
+            Submit a Jam
+          </Link>
+          <Link
+            href={mapHref}
             className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800"
           >
             Map View
@@ -324,14 +407,35 @@ export default async function CalendarPage({
                     ) : (
                       <div className="space-y-1">
                         {jamsForDay.slice(0, 3).map((jam) => {
-                          const start = jam.start_time?.slice(0, 5) ?? "";
+                          const start = formatTime(jam.start_time);
+                          const hasId = Number.isFinite(jam.id);
+                          const locationLine = [jam.city, jam.region]
+                            .filter(Boolean)
+                            .join(" • ");
+
                           return (
                             <div
                               key={jam.id}
-                              className="truncate rounded bg-slate-900/80 px-1 py-[2px] text-[10px] text-slate-100"
+                              className="rounded bg-slate-900/80 px-1 py-[4px] text-[10px] text-slate-100"
                             >
-                              {start && <span>{start} – </span>}
-                              <span>{jam.event_name || "Untitled"}</span>
+                              <div className="truncate font-semibold">
+                                {start && <span>{start} – </span>}
+                                <span>{jam.event_name || "Untitled"}</span>
+                              </div>
+
+                              <div className="mt-[2px] flex items-center justify-between gap-2">
+                                <span className="truncate text-[9px] text-slate-400">
+                                  {locationLine}
+                                </span>
+                                {hasId && (
+                                  <Link
+                                    href={`/jam/${jam.id}`}
+                                    className="shrink-0 text-[9px] text-blue-400 hover:underline"
+                                  >
+                                    View details
+                                  </Link>
+                                )}
+                              </div>
                             </div>
                           );
                         })}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 // Helper to parse comma-separated query params into string[]
@@ -13,12 +13,26 @@ function parseList(raw: string | null): string[] {
 }
 
 // Helper to toggle a value in a list and update the URL
+function normalizeBasePath(basePath: string | null): string {
+  if (!basePath) return "/";
+  let path = basePath.trim();
+  if (!path.startsWith("/")) path = `/${path}`;
+  if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+  return path || "/";
+}
+
+function buildPath(basePath: string, params: URLSearchParams): string {
+  const cleanBase = normalizeBasePath(basePath);
+  return params.toString() ? `${cleanBase}?${params}` : cleanBase;
+}
+
 function toggleListParam(
   key: string,
   value: string,
   current: string[],
   searchParams: URLSearchParams,
-  router: ReturnType<typeof useRouter>
+  router: ReturnType<typeof useRouter>,
+  basePath: string
 ) {
   const next = current.includes(value)
     ? current.filter((v) => v !== value)
@@ -31,14 +45,15 @@ function toggleListParam(
     params.delete(key);
   }
 
-  router.push(params.toString() ? `/?${params}` : "/");
+  router.push(buildPath(basePath, params));
 }
 
 // Helper to toggle a boolean param (stored as "1" when on)
 function toggleBooleanParam(
   key: string,
   searchParams: URLSearchParams,
-  router: ReturnType<typeof useRouter>
+  router: ReturnType<typeof useRouter>,
+  basePath: string
 ) {
   const params = new URLSearchParams(searchParams.toString());
   const current = params.get(key) === "1";
@@ -47,7 +62,7 @@ function toggleBooleanParam(
   } else {
     params.set(key, "1");
   }
-  router.push(params.toString() ? `/?${params}` : "/");
+  router.push(buildPath(basePath, params));
 }
 
 // ------------- OPTION SETS (DB VALUES) -------------
@@ -186,7 +201,10 @@ const FREQUENCY_OPTIONS = [
 export default function RegionFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  const basePath = normalizeBasePath(pathname);
 
   // read selected values from URL for each axis
   const selectedRegions = parseList(searchParams.get("regions"));
@@ -211,8 +229,14 @@ export default function RegionFilter() {
 
   const sp = new URLSearchParams(searchParams.toString());
 
+  const toggleList = (key: string, value: string, current: string[]) =>
+    toggleListParam(key, value, current, sp, router, basePath);
+
+  const toggleBool = (key: string) =>
+    toggleBooleanParam(key, sp, router, basePath);
+
   const resetAll = () => {
-    router.push("/");
+    router.push(buildPath(basePath, new URLSearchParams()));
     setIsOpen(false);
   };
 
@@ -264,15 +288,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedRegions.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "regions",
-                          opt.value,
-                          selectedRegions,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("regions", opt.value, selectedRegions)}
                     />
                     {opt.label}
                   </label>
@@ -290,15 +306,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedCities.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "cities",
-                          opt.value,
-                          selectedCities,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("cities", opt.value, selectedCities)}
                     />
                     {opt.label}
                   </label>
@@ -317,13 +325,7 @@ export default function RegionFilter() {
                       type="checkbox"
                       checked={selectedGreaterRegions.includes(opt.value)}
                       onChange={() =>
-                        toggleListParam(
-                          "greater_regions",
-                          opt.value,
-                          selectedGreaterRegions,
-                          sp,
-                          router
-                        )
+                        toggleList("greater_regions", opt.value, selectedGreaterRegions)
                       }
                     />
                     {opt.label}
@@ -340,9 +342,7 @@ export default function RegionFilter() {
                 <input
                   type="checkbox"
                   checked={isHouseJamOnly}
-                  onChange={() =>
-                    toggleBooleanParam("is_house_jam", sp, router)
-                  }
+                  onChange={() => toggleBool("is_house_jam")}
                 />
                 Only show house jams
               </label>
@@ -358,9 +358,7 @@ export default function RegionFilter() {
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() =>
-                      toggleListParam("dow", opt.value, selectedDows, sp, router)
-                    }
+                    onClick={() => toggleList("dow", opt.value, selectedDows)}
                     className={`px-2 py-1 rounded text-xs border ${
                       selectedDows.includes(opt.value)
                         ? "bg-slate-100 text-slate-900 border-slate-100"
@@ -383,15 +381,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedTod.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "tod",
-                          opt.value,
-                          selectedTod,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("tod", opt.value, selectedTod)}
                     />
                     {opt.label}
                   </label>
@@ -410,15 +400,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedGenres.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "genres",
-                          opt.value,
-                          selectedGenres,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("genres", opt.value, selectedGenres)}
                     />
                     {opt.label}
                   </label>
@@ -436,15 +418,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedSkills.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "skills",
-                          opt.value,
-                          selectedSkills,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("skills", opt.value, selectedSkills)}
                     />
                     {opt.label}
                   </label>
@@ -463,15 +437,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedInvite.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "invite",
-                          opt.value,
-                          selectedInvite,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("invite", opt.value, selectedInvite)}
                     />
                     {opt.label}
                   </label>
@@ -489,15 +455,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedCrowd.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "crowd",
-                          opt.value,
-                          selectedCrowd,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("crowd", opt.value, selectedCrowd)}
                     />
                     {opt.label}
                   </label>
@@ -516,13 +474,7 @@ export default function RegionFilter() {
                       type="checkbox"
                       checked={selectedCoverType.includes(opt.value)}
                       onChange={() =>
-                        toggleListParam(
-                          "cover_type",
-                          opt.value,
-                          selectedCoverType,
-                          sp,
-                          router
-                        )
+                        toggleList("cover_type", opt.value, selectedCoverType)
                       }
                     />
                     {opt.label}
@@ -539,7 +491,7 @@ export default function RegionFilter() {
                 <input
                   type="checkbox"
                   checked={includesDancingOnly}
-                  onChange={() => toggleBooleanParam("dancing", sp, router)}
+                  onChange={() => toggleBool("dancing")}
                 />
                 Only show events that include dancing
               </label>
@@ -556,15 +508,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedKinds.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "kind",
-                          opt.value,
-                          selectedKinds,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("kind", opt.value, selectedKinds)}
                     />
                     {opt.label}
                   </label>
@@ -582,15 +526,7 @@ export default function RegionFilter() {
                     <input
                       type="checkbox"
                       checked={selectedFreq.includes(opt.value)}
-                      onChange={() =>
-                        toggleListParam(
-                          "freq",
-                          opt.value,
-                          selectedFreq,
-                          sp,
-                          router
-                        )
-                      }
+                      onChange={() => toggleList("freq", opt.value, selectedFreq)}
                     />
                     {opt.label}
                   </label>

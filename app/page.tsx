@@ -85,6 +85,12 @@ export default async function Home({
           <div className="flex gap-2">
             <RegionFilter />
             <Link
+              href="/submit"
+              className="rounded-md border border-slate-700 bg-blue-600/90 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-500"
+            >
+              Submit a Jam
+            </Link>
+            <Link
               href="/calendar"
               className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800"
             >

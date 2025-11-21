@@ -19,21 +19,37 @@ type Jam = {
   region: string | null;
   state: string | null;
   country: string | null;
+  greater_region: string | null;
+  latitude: number | null;
+  longitude: number | null;
 
   day_of_week: string | null;
   start_time: string | null;
   end_time: string | null;
   recurrence_description: string | null;
   frequency: string | null;
+  weeks_of_month: string | null;
+  start_date: string | null;
+  end_date: string | null;
   avg_crowd_size: string | null;
+  time_of_day: string | null;
 
   website_url: string | null;
   facebook_url: string | null;
   instagram_url: string | null;
   other_links: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
 
   includes_dancing: boolean | null;
   includes_visual_art: boolean | null;
+  is_house_jam: boolean | null;
+  is_festival: boolean | null;
+  multiple_jams_at_once: boolean | null;
+  trad_level: string | null;
+  invite_status: string | null;
+  cover_charge_type: string | null;
+  cover_charge_amount: string | null;
 
   notes: string | null;
 };
@@ -123,6 +139,10 @@ export default async function JamDetailPage({
     .filter(Boolean)
     .join(" • ");
 
+  const hasContact = jam.contact_email || jam.contact_phone;
+  const hasLinks =
+    jam.website_url || jam.facebook_url || jam.instagram_url || jam.other_links;
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
       <div className="mx-auto max-w-4xl px-4 py-6">
@@ -209,6 +229,36 @@ export default async function JamDetailPage({
           {genreTags && (
             <div className="mt-3 text-xs text-slate-400">{genreTags}</div>
           )}
+
+          {(jam.avg_crowd_size ||
+            jam.invite_status ||
+            jam.cover_charge_type ||
+            jam.cover_charge_amount) && (
+            <div className="mt-4 grid gap-2 text-xs text-slate-300 md:grid-cols-3">
+              {jam.invite_status && (
+                <div>
+                  <div className="font-semibold text-slate-200">Access</div>
+                  <div className="text-slate-400">{jam.invite_status}</div>
+                </div>
+              )}
+              {(jam.cover_charge_type || jam.cover_charge_amount) && (
+                <div>
+                  <div className="font-semibold text-slate-200">Cover</div>
+                  <div className="text-slate-400">
+                    {[jam.cover_charge_type, jam.cover_charge_amount]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </div>
+                </div>
+              )}
+              {jam.avg_crowd_size && (
+                <div>
+                  <div className="font-semibold text-slate-200">Crowd</div>
+                  <div className="text-slate-400">{jam.avg_crowd_size}</div>
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Attendance / verification strip – placeholders */}
@@ -233,6 +283,62 @@ export default async function JamDetailPage({
             </button>
           </div>
         </section>
+
+        {/* Format & tradition */}
+        {(jam.trad_level ||
+          jam.time_of_day ||
+          jam.is_house_jam ||
+          jam.is_festival ||
+          jam.includes_dancing ||
+          jam.includes_visual_art ||
+          jam.multiple_jams_at_once) && (
+          <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
+            <h2 className="mb-3 text-sm font-semibold text-slate-200">
+              Format & Tradition
+            </h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {jam.trad_level && (
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-slate-400">
+                    How traditional
+                  </div>
+                  <div className="text-sm text-slate-100">
+                    {jam.trad_level}
+                  </div>
+                </div>
+              )}
+              {jam.time_of_day && (
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-slate-400">
+                    Time of day
+                  </div>
+                  <div className="text-sm text-slate-100">{jam.time_of_day}</div>
+                </div>
+              )}
+              {jam.includes_dancing && (
+                <div className="text-sm text-slate-100">
+                  Includes dancing
+                </div>
+              )}
+              {jam.includes_visual_art && (
+                <div className="text-sm text-slate-100">
+                  Includes visual art
+                </div>
+              )}
+              {jam.is_house_jam && (
+                <div className="text-sm text-slate-100">House jam</div>
+              )}
+              {jam.is_festival && (
+                <div className="text-sm text-slate-100">Festival spans days</div>
+              )}
+              {jam.multiple_jams_at_once && (
+                <div className="text-sm text-slate-100">
+                  Multiple jams at once
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Ratings summary – placeholders */}
         <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
@@ -279,60 +385,87 @@ export default async function JamDetailPage({
         </section>
 
         {/* Contact & links */}
-        <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
-          <h2 className="mb-3 text-sm font-semibold text-slate-200">
-            Contact & Links
-          </h2>
-          <div className="space-y-2 text-sm">
-            {jam.website_url && (
-              <div>
-                <a
-                  href={jam.website_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-400 hover:underline"
-                >
-                  Website
-                </a>
-              </div>
-            )}
-            {jam.facebook_url && (
-              <div>
-                <a
-                  href={jam.facebook_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-400 hover:underline"
-                >
-                  Facebook
-                </a>
-              </div>
-            )}
-            {jam.instagram_url && (
-              <div>
-                <a
-                  href={jam.instagram_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-400 hover:underline"
-                >
-                  Instagram
-                </a>
-              </div>
-            )}
-            {jam.other_links && (
-              <div className="text-xs text-slate-300">{jam.other_links}</div>
-            )}
-            {!jam.website_url &&
-              !jam.facebook_url &&
-              !jam.instagram_url &&
-              !jam.other_links && (
-                <div className="text-xs text-slate-500">
-                  No links provided yet.
+        {(hasContact || hasLinks) && (
+          <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
+            <h2 className="mb-3 text-sm font-semibold text-slate-200">
+              Contact & Links
+            </h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              {hasContact && (
+                <div className="space-y-2 text-sm">
+                  {jam.contact_email && (
+                    <div>
+                      <span className="text-slate-400">Email: </span>
+                      <a
+                        href={`mailto:${jam.contact_email}`}
+                        className="text-blue-400 hover:underline"
+                      >
+                        {jam.contact_email}
+                      </a>
+                    </div>
+                  )}
+                  {jam.contact_phone && (
+                    <div>
+                      <span className="text-slate-400">Phone: </span>
+                      <a
+                        href={`tel:${jam.contact_phone}`}
+                        className="text-blue-400 hover:underline"
+                      >
+                        {jam.contact_phone}
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
-          </div>
-        </section>
+
+              {hasLinks && (
+                <div className="space-y-2 text-sm">
+                  {jam.website_url && (
+                    <div>
+                      <a
+                        href={jam.website_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-400 hover:underline"
+                      >
+                        Website
+                      </a>
+                    </div>
+                  )}
+                  {jam.facebook_url && (
+                    <div>
+                      <a
+                        href={jam.facebook_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-400 hover:underline"
+                      >
+                        Facebook
+                      </a>
+                    </div>
+                  )}
+                  {jam.instagram_url && (
+                    <div>
+                      <a
+                        href={jam.instagram_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-400 hover:underline"
+                      >
+                        Instagram
+                      </a>
+                    </div>
+                  )}
+                  {jam.other_links && (
+                    <div className="text-xs text-slate-300">
+                      {jam.other_links}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Notes */}
         {jam.notes && (
