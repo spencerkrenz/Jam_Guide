@@ -10,7 +10,6 @@ type JamReview = {
   display_name: string | null;
   comments: string | null;
   overall_rating: number | null;
-  networking_rating: number | null;
   info_accuracy_rating: number | null;
   happened: boolean | null;
 };
@@ -19,7 +18,6 @@ type FormState = {
   displayName: string;
   comments: string;
   overallRating: number;
-  networkingRating: number;
   infoAccuracyRating: number;
   happened: "yes" | "no" | "unknown";
 };
@@ -28,7 +26,6 @@ const initialForm: FormState = {
   displayName: "",
   comments: "",
   overallRating: 4,
-  networkingRating: 4,
   infoAccuracyRating: 4,
   happened: "yes",
 };
@@ -86,7 +83,7 @@ export default function ReviewsSection({
       const { data, error } = await supabase
         .from("jam_reviews")
         .select(
-          "id, jam_id, created_at, display_name, comments, overall_rating, networking_rating, info_accuracy_rating, happened",
+          "id, jam_id, created_at, display_name, comments, overall_rating, info_accuracy_rating, happened",
         )
         .eq("jam_id", jamId)
         .order("created_at", { ascending: false });
@@ -115,12 +112,11 @@ export default function ReviewsSection({
 
   const stats = useMemo(() => {
     const overall = average(reviews.map((r) => r.overall_rating));
-    const networking = average(reviews.map((r) => r.networking_rating));
     const accuracy = average(reviews.map((r) => r.info_accuracy_rating));
     const checkins = reviews.filter((r) => r.happened === true).length;
     const negativeCheckins = reviews.filter((r) => r.happened === false).length;
 
-    return { overall, networking, accuracy, checkins, negativeCheckins };
+    return { overall, accuracy, checkins, negativeCheckins };
   }, [reviews]);
 
   const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
@@ -138,7 +134,6 @@ export default function ReviewsSection({
     const payload = {
       jam_id: jamId,
       overall_rating: form.overallRating,
-      networking_rating: form.networkingRating,
       info_accuracy_rating: form.infoAccuracyRating,
       happened: happenedValue,
       comments: form.comments.trim() || null,
@@ -186,16 +181,10 @@ export default function ReviewsSection({
         )}
       </div>
 
-      <div className="mb-4 grid grid-cols-2 gap-4 text-sm md:grid-cols-5">
+      <div className="mb-4 grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
         <div>
           <div className="text-2xl font-bold">{formatRating(stats.overall)}</div>
           <div className="text-xs text-slate-400">Overall</div>
-        </div>
-        <div>
-          <div className="text-lg font-semibold">
-            {formatRating(stats.networking)}
-          </div>
-          <div className="text-xs text-slate-400">Networking</div>
         </div>
         <div>
           <div className="text-lg font-semibold">
@@ -245,9 +234,6 @@ export default function ReviewsSection({
                   {review.overall_rating !== null && (
                     <span>Overall: {review.overall_rating}/5</span>
                   )}
-                  {review.networking_rating !== null && (
-                    <span>Networking: {review.networking_rating}/5</span>
-                  )}
                   {review.info_accuracy_rating !== null && (
                     <span>Accuracy: {review.info_accuracy_rating}/5</span>
                   )}
@@ -280,25 +266,6 @@ export default function ReviewsSection({
                     setForm((prev) => ({
                       ...prev,
                       overallRating: Number(e.target.value),
-                    }))
-                  }
-                >
-                  {[5, 4, 3, 2, 1].map((v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="space-y-1">
-                <span className="text-xs text-slate-400">Networking</span>
-                <select
-                  className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2"
-                  value={form.networkingRating}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      networkingRating: Number(e.target.value),
                     }))
                   }
                 >
