@@ -1,9 +1,11 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-type Jam = {
+export type Jam = {
   id: number | null; // Supabase primary key
   latitude: number | null;
   longitude: number | null;

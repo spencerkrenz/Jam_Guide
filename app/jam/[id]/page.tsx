@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
+import ReviewsSection from "./ReviewsSection";
 
 type Jam = {
   id: number;
@@ -134,6 +135,7 @@ export default async function JamDetailPage({
   const start = formatTime(jam.start_time);
   const end = formatTime(jam.end_time);
   const timeRange = start && end ? `${start}–${end}` : start || "";
+  const jamDisplayName = jam.event_name || jam.venue_name || "this jam";
 
   const genreTags = [jam.primary_genre, jam.secondary_genres]
     .filter(Boolean)
@@ -340,49 +342,7 @@ export default async function JamDetailPage({
           </section>
         )}
 
-        {/* Ratings summary – placeholders */}
-        <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
-          <h2 className="mb-3 text-sm font-semibold text-slate-200">
-            Community Ratings
-          </h2>
-
-          <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-            <div>
-              <div className="text-2xl font-bold">–</div>
-              <div className="text-xs text-slate-400">Overall</div>
-            </div>
-            <div>
-              <div className="text-lg font-semibold">–</div>
-              <div className="text-xs text-slate-400">Networking</div>
-            </div>
-            <div>
-              <div className="text-lg font-semibold">–</div>
-              <div className="text-xs text-slate-400">Info accuracy</div>
-            </div>
-            <div>
-              <div className="text-lg font-semibold">0</div>
-              <div className="text-xs text-slate-400">Recent check-ins</div>
-            </div>
-          </div>
-        </section>
-
-        {/* Reviews – placeholder */}
-        <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-200">Reviews</h2>
-            <button
-              type="button"
-              className="rounded-md bg-blue-600 px-3 py-1 text-xs font-semibold text-white hover:bg-blue-500"
-              disabled
-            >
-              Add Review (coming soon)
-            </button>
-          </div>
-
-          <p className="text-sm text-slate-400">
-            No reviews yet. Once reviews are enabled, they&apos;ll show up here.
-          </p>
-        </section>
+        <ReviewsSection jamId={jam.id} jamName={jamDisplayName} />
 
         {/* Contact & links */}
         {(hasContact || hasLinks) && (

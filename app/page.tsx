@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import RegionFilter from "./RegionFilter";
-import MapView from "./MapView";
+import MapView, { Jam } from "./MapView";
 import Link from "next/link";
 
 type SearchParams = { [key: string]: string | string[] | undefined };
@@ -19,7 +19,7 @@ export default async function Home({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  // Resolve the promise-based searchParams
+  // Resolve the promise-based searchParams (Next 16)
   const params = await searchParams;
 
   const regions = parseListParam(params.regions);
@@ -64,13 +64,14 @@ export default async function Home({
     console.error("Error loading jams:", error.message);
   }
 
-  const jams = data ?? [];
+  // Convert Supabase rows to the Jam type that MapView expects
+  const jamsForMap: Jam[] = (data ?? []) as Jam[];
 
-    return (
+  return (
     <main className="relative h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
       {/* Full-screen map in the background */}
       <div className="absolute inset-0 z-0">
-        <MapView jams={jams as any} />
+        <MapView jams={jamsForMap} />
       </div>
 
       {/* Overlay content on top of the map */}
@@ -81,7 +82,7 @@ export default async function Home({
             Jam Guide – Northern California
           </h1>
 
-          {/* Right side: Filters + Calendar View */}
+          {/* Right side: Filters + Submit + Calendar View */}
           <div className="flex gap-2">
             <RegionFilter />
             <Link
