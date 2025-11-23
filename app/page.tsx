@@ -68,7 +68,7 @@ export default async function Home({
   const jamsForMap: Jam[] = (data ?? []) as Jam[];
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
+    <main className="mobile-shell relative h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
       {/* Full-screen map in the background */}
       <div className="absolute inset-0 z-0">
         <MapView jams={jamsForMap} />
@@ -77,18 +77,18 @@ export default async function Home({
       {/* Overlay content on top of the map */}
       <div className="pointer-events-none relative z-10 flex h-full flex-col">
         {/* Top bar: title + filters + calendar view */}
-        <header className="pointer-events-auto relative z-20 flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
+        <header className="mobile-topbar pointer-events-auto relative z-20 flex items-center justify-between p-4">
+          <div className="topbar-brand flex items-center gap-3">
             <h1 className="ml-8 rounded-md border border-blue-700 bg-blue-900/90 px-4 py-2 text-2xl font-bold text-white drop-shadow">
               JamGuide
             </h1>
-            <span className="rounded-md bg-slate-900/70 px-3 py-1 text-[11px] font-medium text-slate-200/80">
+            <span className="version-pill rounded-md bg-slate-900/70 px-3 py-1 text-[11px] font-medium text-slate-200/80">
               v0 (only in Northern California for now! Text me at (415) 858-8640 if you want to be involved!)
             </span>
           </div>
 
           {/* Right side: Filters + Submit + Calendar View */}
-          <div className="flex gap-2">
+          <div className="topbar-actions flex gap-2">
             <RegionFilter />
             <Link
               href="/submit"
