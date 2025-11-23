@@ -5,6 +5,7 @@
   --foreground: #171717;
 }
 
+/* stylelint-disable-next-line at-rule-no-unknown */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -35,12 +36,13 @@ body {
   }
 
   .mobile-topbar {
+    position: relative;
     width: 100%;
     box-sizing: border-box;
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
-    padding: 10px 12px;
+    gap: 8px;
+    padding: 10px 12px 12px;
     background: linear-gradient(
       135deg,
       rgba(10, 12, 26, 0.94),
@@ -56,25 +58,25 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
   }
 
   .mobile-topbar h1 {
-    margin-left: 0;
+    margin-left: 0 !important;
     font-size: 1.05rem;
-    line-height: 1.2rem;
-    padding: 10px 12px;
+    line-height: 1.15rem;
+    padding: 8px 10px;
   }
 
   .mobile-topbar .version-pill {
-    display: none;
+    display: none !important;
   }
 
   .mobile-topbar .topbar-actions {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .mobile-topbar .topbar-actions a,
@@ -82,7 +84,8 @@ body {
     width: 100%;
     text-align: center;
     font-size: 12px;
-    padding: 10px;
+    padding: 9px 10px;
     border-radius: 10px;
+    white-space: nowrap;
   }
 }
