@@ -84,7 +84,7 @@ export default function MapView({ jams }: { jams: Jam[] }) {
         scrollWheelZoom={true}
         zoomControl={false}
       >
-        <ZoomControl position="bottom-right" />
+        {ZoomControl && <ZoomControl position="bottom-right" />}
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
