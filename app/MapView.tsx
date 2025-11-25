@@ -34,16 +34,31 @@ export default function MapView({ jams }: { jams: Jam[] }) {
     let mounted = true;
 
     async function loadLeaflet() {
-      const L = await import("react-leaflet");
-      if (!mounted) return;
+      try {
+        const mod = await import("react-leaflet");
+        // Handle potential ESM/CJS interop issues where exports might be on .default
+        const MapContainer = mod.MapContainer || (mod as any).default?.MapContainer;
+        const TileLayer = mod.TileLayer || (mod as any).default?.TileLayer;
+        const CircleMarker = mod.CircleMarker || (mod as any).default?.CircleMarker;
+        const Popup = mod.Popup || (mod as any).default?.Popup;
+        const ZoomControl = mod.ZoomControl || (mod as any).default?.ZoomControl;
 
-      setLeaflet({
-        MapContainer: L.MapContainer,
-        TileLayer: L.TileLayer,
-        CircleMarker: L.CircleMarker,
-        Popup: L.Popup,
-        ZoomControl: L.ZoomControl,
-      });
+        if (!mounted) return;
+
+        if (!MapContainer) {
+          console.error("Could not load MapContainer from react-leaflet", mod);
+        }
+
+        setLeaflet({
+          MapContainer,
+          TileLayer,
+          CircleMarker,
+          Popup,
+          ZoomControl,
+        });
+      } catch (e) {
+        console.error("Failed to load react-leaflet", e);
+      }
     }
 
     loadLeaflet();
