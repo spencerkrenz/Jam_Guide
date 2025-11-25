@@ -23,6 +23,7 @@ type LeafletComponents = {
   TileLayer: any;
   CircleMarker: any;
   Popup: any;
+  ZoomControl: any;
 };
 
 export default function MapView({ jams }: { jams: Jam[] }) {
@@ -41,6 +42,7 @@ export default function MapView({ jams }: { jams: Jam[] }) {
         TileLayer: L.TileLayer,
         CircleMarker: L.CircleMarker,
         Popup: L.Popup,
+        ZoomControl: L.ZoomControl,
       });
     }
 
@@ -60,7 +62,7 @@ export default function MapView({ jams }: { jams: Jam[] }) {
     );
   }
 
-  const { MapContainer, TileLayer, CircleMarker, Popup } = leaflet;
+  const { MapContainer, TileLayer, CircleMarker, Popup, ZoomControl } = leaflet;
 
   const points = (jams || []).filter(
     (jam) => jam.latitude !== null && jam.longitude !== null
@@ -80,7 +82,9 @@ export default function MapView({ jams }: { jams: Jam[] }) {
         zoom={8}
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
+        zoomControl={false}
       >
+        <ZoomControl position="bottom-right" />
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

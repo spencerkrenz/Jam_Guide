@@ -77,28 +77,29 @@ export default async function Home({
       {/* Overlay content on top of the map */}
       <div className="pointer-events-none relative z-10 flex h-full flex-col">
         {/* Top bar: title + filters + calendar view */}
-        <header className="mobile-topbar pointer-events-auto relative z-20 flex items-center justify-between p-4">
-          <div className="topbar-brand flex items-center gap-3">
-            <h1 className="ml-8 rounded-md border border-blue-700 bg-blue-900/90 px-4 py-2 text-2xl font-bold text-white drop-shadow">
+        {/* Top bar: title + filters + calendar view */}
+        <header className="mobile-topbar pointer-events-auto relative z-20 flex flex-col md:flex-row items-stretch md:items-center justify-between p-4 gap-4 md:gap-0 bg-slate-900/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-b border-slate-700 md:border-none">
+          <div className="topbar-brand flex items-center justify-between md:justify-start gap-3">
+            <h1 className="rounded-md border border-blue-700 bg-blue-900/90 px-4 py-2 text-2xl font-bold text-white drop-shadow ml-0 md:ml-8">
               JamGuide
             </h1>
-            <span className="version-pill rounded-md bg-slate-900/70 px-3 py-1 text-[11px] font-medium text-slate-200/80">
+            <span className="version-pill hidden md:block rounded-md bg-slate-900/70 px-3 py-1 text-[11px] font-medium text-slate-200/80">
               v0 (only in Northern California for now! Text me at (415) 858-8640 if you want to be involved!)
             </span>
           </div>
 
           {/* Right side: Filters + Submit + Calendar View */}
-          <div className="topbar-actions flex gap-2">
+          <div className="topbar-actions grid grid-cols-3 gap-2 md:flex md:gap-2">
             <RegionFilter />
             <Link
               href="/submit"
-              className="rounded-md border border-slate-700 bg-blue-600/90 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-500"
+              className="rounded-md border border-slate-700 bg-blue-600/90 px-3 py-1 text-sm font-semibold text-white hover:bg-blue-500 text-center flex items-center justify-center"
             >
               Submit a Jam
             </Link>
             <Link
               href="/calendar"
-              className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800"
+              className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800 text-center flex items-center justify-center"
             >
               Calendar View
             </Link>

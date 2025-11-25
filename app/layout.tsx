@@ -20,10 +20,6 @@ export const metadata: Metadata = {
   description: "Discover live jam sessions across Northern California.",
   applicationName: "JamGuide",
   manifest: "/manifest.webmanifest",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0f172a" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

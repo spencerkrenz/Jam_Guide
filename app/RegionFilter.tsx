@@ -243,11 +243,11 @@ export default function RegionFilter() {
   return (
     <>
       {/* Trigger button */}
-      <div className="mb-4 flex justify-end">
+      <div>
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800"
+          className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800 w-full md:w-auto"
         >
           Filters
         </button>
