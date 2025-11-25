@@ -1,7 +1,10 @@
 import { supabase } from "@/lib/supabaseClient";
 import RegionFilter from "./RegionFilter";
-import MapView, { Jam } from "./MapView";
+import type { Jam } from "./MapView";
+import MapWrapper from "./MapWrapper";
 import Link from "next/link";
+
+const MapView = MapWrapper;
 
 type SearchParams = { [key: string]: string | string[] | undefined };
 
