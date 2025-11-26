@@ -1,12 +1,10 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, CircleMarker, Popup, ZoomControl } from "react-leaflet";
 import Link from "next/link";
 
 export type Jam = {
-  id: number | null; // Supabase primary key
+  id: number | null;
   latitude: number | null;
   longitude: number | null;
   event_name: string | null;
@@ -18,67 +16,7 @@ export type Jam = {
   event_kind: string | null;
 };
 
-type LeafletComponents = {
-  MapContainer: any;
-  TileLayer: any;
-  CircleMarker: any;
-  Popup: any;
-  ZoomControl: any;
-};
-
 export default function MapView({ jams }: { jams: Jam[] }) {
-  const [leaflet, setLeaflet] = useState<LeafletComponents | null>(null);
-
-  // Only load react-leaflet on the client
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadLeaflet() {
-      try {
-        const mod = await import("react-leaflet");
-        // Handle potential ESM/CJS interop issues where exports might be on .default
-        const MapContainer = mod.MapContainer || (mod as any).default?.MapContainer;
-        const TileLayer = mod.TileLayer || (mod as any).default?.TileLayer;
-        const CircleMarker = mod.CircleMarker || (mod as any).default?.CircleMarker;
-        const Popup = mod.Popup || (mod as any).default?.Popup;
-        const ZoomControl = mod.ZoomControl || (mod as any).default?.ZoomControl;
-
-        if (!mounted) return;
-
-        if (!MapContainer) {
-          console.error("Could not load MapContainer from react-leaflet", mod);
-        }
-
-        setLeaflet({
-          MapContainer,
-          TileLayer,
-          CircleMarker,
-          Popup,
-          ZoomControl,
-        });
-      } catch (e) {
-        console.error("Failed to load react-leaflet", e);
-      }
-    }
-
-    loadLeaflet();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // While loading the map lib, keep layout stable
-  if (!leaflet) {
-    return (
-      <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">
-        Loading map…
-      </div>
-    );
-  }
-
-  const { MapContainer, TileLayer, CircleMarker, Popup, ZoomControl } = leaflet;
-
   const points = (jams || []).filter(
     (jam) => jam.latitude !== null && jam.longitude !== null
   );
@@ -99,9 +37,9 @@ export default function MapView({ jams }: { jams: Jam[] }) {
         scrollWheelZoom={true}
         zoomControl={false}
       >
-        {ZoomControl && <ZoomControl position="bottom-right" />}
+        <ZoomControl position="bottomright" />
         <TileLayer
-          attribution="&copy; OpenStreetMap contributors"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
