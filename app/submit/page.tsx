@@ -243,23 +243,11 @@ export default function SubmitJamPage() {
     setSuccess(null);
     setSubmitting(true);
 
-    // Auto-generate a sequential event_id (fallback to timestamp)
-    let nextEventId: number | null = null;
-    const { data: lastIdRows, error: lastIdError } = await supabase
-      .from("jams")
-      .select("event_id")
-      .not("event_id", "is", null)
-      .order("event_id", { ascending: false })
-      .limit(1);
-
-    if (!lastIdError) {
-      const raw = lastIdRows?.[0]?.event_id;
-      const numeric = Number(raw);
-      nextEventId = Number.isFinite(numeric) ? numeric + 1 : 1;
-    } else {
-      console.warn("Could not fetch last event_id, using fallback:", lastIdError.message);
-      nextEventId = Math.floor(Date.now() / 1000); // fallback unique-ish
-    }
+    // Generate a random 16-digit number for event_id
+    // Range: 1,000,000,000,000,000 to 9,007,199,254,740,991 (MAX_SAFE_INTEGER)
+    const minId = 1_000_000_000_000_000;
+    const maxId = Number.MAX_SAFE_INTEGER;
+    const nextEventId = Math.floor(Math.random() * (maxId - minId + 1)) + minId;
 
     if (!form.event_name.trim()) {
       setError("Please add a jam name.");
