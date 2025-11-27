@@ -52,7 +52,7 @@ type Jam = {
   cover_charge_type: string | null;
   cover_charge_amount: string | null;
 
-  notes: string | null;
+  event_description: string | null;
 };
 
 function formatTime(t: string | null): string {
@@ -263,6 +263,16 @@ export default async function JamDetailPage({
           )}
         </section>
 
+        {/* Description (formerly Notes) */}
+        {jam.event_description && (
+          <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
+            <h2 className="mb-2 text-sm font-semibold text-slate-200">
+              Description
+            </h2>
+            <p className="text-sm text-slate-300">{jam.event_description}</p>
+          </section>
+        )}
+
         {/* Attendance / verification strip – placeholders */}
         <section className="mb-6 rounded-2xl bg-slate-900/60 p-4 text-sm">
           <p className="mb-3 text-slate-300">
@@ -427,15 +437,7 @@ export default async function JamDetailPage({
           </section>
         )}
 
-        {/* Notes */}
-        {jam.notes && (
-          <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
-            <h2 className="mb-2 text-sm font-semibold text-slate-200">
-              Notes
-            </h2>
-            <p className="text-sm text-slate-300">{jam.notes}</p>
-          </section>
-        )}
+
       </div>
     </main>
   );

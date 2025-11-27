@@ -38,7 +38,7 @@ type FormState = {
   facebook_url: string;
   instagram_url: string;
   other_links: string;
-  notes: string;
+  event_description: string;
   contact_email: string;
   contact_phone: string;
   trad_level: string;
@@ -81,7 +81,7 @@ const emptyForm: FormState = {
   facebook_url: "",
   instagram_url: "",
   other_links: "",
-  notes: "",
+  event_description: "",
   contact_email: "",
   contact_phone: "",
   trad_level: "",
@@ -229,13 +229,13 @@ export default function SubmitJamPage() {
 
   const handleChange =
     (field: keyof FormState) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-      const value =
-        e.target.type === "checkbox"
-          ? (e.target as HTMLInputElement).checked
-          : e.target.value;
-      setForm((prev) => ({ ...prev, [field]: value }));
-    };
+      (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const value =
+          e.target.type === "checkbox"
+            ? (e.target as HTMLInputElement).checked
+            : e.target.value;
+        setForm((prev) => ({ ...prev, [field]: value }));
+      };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -314,7 +314,7 @@ export default function SubmitJamPage() {
       facebook_url: nullIfEmpty(form.facebook_url),
       instagram_url: nullIfEmpty(form.instagram_url),
       other_links: nullIfEmpty(form.other_links),
-      notes: nullIfEmpty(form.notes),
+      event_description: nullIfEmpty(form.event_description),
       contact_email: nullIfEmpty(form.contact_email),
       contact_phone: nullIfEmpty(form.contact_phone),
       trad_level: nullIfEmpty(form.trad_level),
@@ -853,11 +853,11 @@ export default function SubmitJamPage() {
 
           <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-300">
-              Notes
+              Event Description
             </h2>
             <textarea
-              value={form.notes}
-              onChange={handleChange("notes")}
+              value={form.event_description}
+              onChange={handleChange("event_description")}
               className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
               rows={4}
               placeholder="Parking info, house rules, instruments available, etc."
