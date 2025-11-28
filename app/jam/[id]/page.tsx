@@ -236,31 +236,31 @@ export default async function JamDetailPage({
             jam.invite_status ||
             jam.cover_charge_type ||
             jam.cover_charge_amount) && (
-            <div className="mt-4 grid gap-2 text-xs text-slate-300 md:grid-cols-3">
-              {jam.invite_status && (
-                <div>
-                  <div className="font-semibold text-slate-200">Access</div>
-                  <div className="text-slate-400">{jam.invite_status}</div>
-                </div>
-              )}
-              {(jam.cover_charge_type || jam.cover_charge_amount) && (
-                <div>
-                  <div className="font-semibold text-slate-200">Cover</div>
-                  <div className="text-slate-400">
-                    {[jam.cover_charge_type, jam.cover_charge_amount]
-                      .filter(Boolean)
-                      .join(" · ")}
+              <div className="mt-4 grid gap-2 text-xs text-slate-300 md:grid-cols-3">
+                {jam.invite_status && (
+                  <div>
+                    <div className="font-semibold text-slate-200">Access</div>
+                    <div className="text-slate-400">{jam.invite_status}</div>
                   </div>
-                </div>
-              )}
-              {jam.avg_crowd_size && (
-                <div>
-                  <div className="font-semibold text-slate-200">Crowd</div>
-                  <div className="text-slate-400">{jam.avg_crowd_size}</div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+                {(jam.cover_charge_type || jam.cover_charge_amount) && (
+                  <div>
+                    <div className="font-semibold text-slate-200">Cover</div>
+                    <div className="text-slate-400">
+                      {[jam.cover_charge_type, jam.cover_charge_amount]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </div>
+                  </div>
+                )}
+                {jam.avg_crowd_size && (
+                  <div>
+                    <div className="font-semibold text-slate-200">Crowd</div>
+                    <div className="text-slate-400">{jam.avg_crowd_size}</div>
+                  </div>
+                )}
+              </div>
+            )}
         </section>
 
         {/* Description (formerly Notes) */}
@@ -304,53 +304,53 @@ export default async function JamDetailPage({
           jam.includes_dancing ||
           jam.includes_visual_art ||
           jam.multiple_jams_at_once) && (
-          <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
-            <h2 className="mb-3 text-sm font-semibold text-slate-200">
-              Format & Tradition
-            </h2>
-            <div className="grid gap-3 md:grid-cols-2">
-              {jam.trad_level && (
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-slate-400">
-                    How traditional
+            <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
+              <h2 className="mb-3 text-sm font-semibold text-slate-200">
+                Format & Tradition
+              </h2>
+              <div className="grid gap-3 md:grid-cols-2">
+                {jam.trad_level && (
+                  <div>
+                    <div className="text-xs uppercase tracking-wide text-slate-400">
+                      How traditional
+                    </div>
+                    <div className="text-sm text-slate-100">
+                      {jam.trad_level}
+                    </div>
                   </div>
+                )}
+                {jam.time_of_day && (
+                  <div>
+                    <div className="text-xs uppercase tracking-wide text-slate-400">
+                      Time of day
+                    </div>
+                    <div className="text-sm text-slate-100">{jam.time_of_day}</div>
+                  </div>
+                )}
+                {jam.includes_dancing && (
                   <div className="text-sm text-slate-100">
-                    {jam.trad_level}
+                    Includes dancing
                   </div>
-                </div>
-              )}
-              {jam.time_of_day && (
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-slate-400">
-                    Time of day
+                )}
+                {jam.includes_visual_art && (
+                  <div className="text-sm text-slate-100">
+                    Includes visual art
                   </div>
-                  <div className="text-sm text-slate-100">{jam.time_of_day}</div>
-                </div>
-              )}
-              {jam.includes_dancing && (
-                <div className="text-sm text-slate-100">
-                  Includes dancing
-                </div>
-              )}
-              {jam.includes_visual_art && (
-                <div className="text-sm text-slate-100">
-                  Includes visual art
-                </div>
-              )}
-              {jam.is_house_jam && (
-                <div className="text-sm text-slate-100">House jam</div>
-              )}
-              {jam.is_festival && (
-                <div className="text-sm text-slate-100">Festival spans days</div>
-              )}
-              {jam.multiple_jams_at_once && (
-                <div className="text-sm text-slate-100">
-                  Multiple jams at once
-                </div>
-              )}
-            </div>
-          </section>
-        )}
+                )}
+                {jam.is_house_jam && (
+                  <div className="text-sm text-slate-100">House jam</div>
+                )}
+                {jam.is_festival && (
+                  <div className="text-sm text-slate-100">Festival spans days</div>
+                )}
+                {jam.multiple_jams_at_once && (
+                  <div className="text-sm text-slate-100">
+                    Multiple jams at once
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
         <ReviewsSection jamId={jam.id} jamName={jamDisplayName} />
 
