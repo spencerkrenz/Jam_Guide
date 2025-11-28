@@ -1,12 +1,14 @@
 // app/jam/[id]/page.tsx
 
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import ReviewsSection from "./ReviewsSection";
+import { redirect } from "next/navigation";
 
 type Jam = {
   id: number;
   event_id: number | null;
+  owner_id: string | null; // Added owner_id
 
   event_name: string | null;
   event_kind: string | null;
@@ -106,6 +108,7 @@ export default async function JamDetailPage({
 
   console.log("JamDetailPage: loading jam with id =", idNum);
 
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("jams")
     .select("*")
@@ -131,6 +134,15 @@ export default async function JamDetailPage({
 
   const jam = data as Jam;
 
+  // Check current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isOwner = user && jam.owner_id === user.id;
+  // TODO: Add admin check here if you have an admin role or specific email
+  // const isAdmin = user?.email === 'admin@example.com'; 
+
   const mapsUrl = buildMapsUrl(jam);
   const start = formatTime(jam.start_time);
   const end = formatTime(jam.end_time);
@@ -149,17 +161,41 @@ export default async function JamDetailPage({
     <main className="min-h-screen bg-slate-950 text-slate-100">
       <div className="mx-auto max-w-4xl px-4 py-6">
         {/* Back link */}
-        <div className="mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <Link
             href="/"
             className="text-sm text-slate-300 hover:underline"
           >
             ← Back to map
           </Link>
+          {!user && (
+            <Link
+              href="/login"
+              className="text-sm font-medium text-blue-400 hover:text-blue-300"
+            >
+              Log in / Sign up
+            </Link>
+          )}
+          {user && (
+            <div className="text-sm text-slate-400">
+              Logged in as {user.email}
+            </div>
+          )}
         </div>
 
         {/* Top info card */}
-        <section className="mb-6 rounded-2xl bg-slate-900/80 p-5 shadow">
+        <section className="mb-6 rounded-2xl bg-slate-900/80 p-5 shadow relative overflow-hidden">
+          {isOwner && (
+            <div className="absolute top-4 right-4 z-10">
+              <Link
+                href={`/jam/${jam.id}/edit`}
+                className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-blue-500 transition-colors"
+              >
+                Edit Jam
+              </Link>
+            </div>
+          )}
+
           <div className="mb-3 flex flex-wrap gap-2">
             {jam.primary_genre && (
               <span className="rounded-full bg-blue-600/80 px-3 py-1 text-xs font-semibold">
@@ -178,7 +214,7 @@ export default async function JamDetailPage({
             )}
           </div>
 
-          <h1 className="mb-2 text-2xl font-bold">
+          <h1 className="mb-2 text-2xl font-bold pr-24">
             {jam.event_name || "Untitled jam"}
           </h1>
 
@@ -439,20 +475,31 @@ export default async function JamDetailPage({
 
 
         {/* Request to Claim Jam As Host */}
-        <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
-          <h2 className="mb-2 text-sm font-semibold text-slate-200">
-            Request to Claim Jam As Host
-          </h2>
-          <p className="mb-4 text-sm text-slate-300">
-            If you are the host, you can claim this jam to receive login information and update event details as needed.
-          </p>
-          <a
-            href={`mailto:hello@jamguide.com?subject=Claim Request: ${encodeURIComponent(jamDisplayName)} (ID: ${jam.id})`}
-            className="inline-block rounded-full border border-slate-700 bg-slate-800 px-5 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
-          >
-            Request to Claim
-          </a>
-        </section>
+        {!isOwner && (
+          <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
+            <h2 className="mb-2 text-sm font-semibold text-slate-200">
+              Is this your jam?
+            </h2>
+            <p className="mb-4 text-sm text-slate-300">
+              Claim this jam to manage its details and keep the community updated.
+            </p>
+            {user ? (
+              <a
+                href={`mailto:hello@jamguide.com?subject=Claim Request: ${encodeURIComponent(jamDisplayName)} (ID: ${jam.id})&body=I would like to claim this jam. My user email is ${user.email}.`}
+                className="inline-block rounded-full border border-slate-700 bg-slate-800 px-5 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
+              >
+                Request to Claim
+              </a>
+            ) : (
+              <Link
+                href={`/login?next=/jam/${jam.id}`}
+                className="inline-block rounded-full bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-500 transition-colors"
+              >
+                Log in to Claim
+              </Link>
+            )}
+          </section>
+        )}
 
       </div>
     </main>
