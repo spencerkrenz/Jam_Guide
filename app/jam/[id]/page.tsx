@@ -438,6 +438,22 @@ export default async function JamDetailPage({
         )}
 
 
+        {/* Request to Claim Jam As Host */}
+        <section className="mb-6 rounded-2xl bg-slate-900/60 p-4">
+          <h2 className="mb-2 text-sm font-semibold text-slate-200">
+            Request to Claim Jam As Host
+          </h2>
+          <p className="mb-4 text-sm text-slate-300">
+            If you are the host, you can claim this jam to receive login information and update event details as needed.
+          </p>
+          <a
+            href={`mailto:hello@jamguide.com?subject=Claim Request: ${encodeURIComponent(jamDisplayName)} (ID: ${jam.id})`}
+            className="inline-block rounded-full border border-slate-700 bg-slate-800 px-5 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
+          >
+            Request to Claim
+          </a>
+        </section>
+
       </div>
     </main>
   );
