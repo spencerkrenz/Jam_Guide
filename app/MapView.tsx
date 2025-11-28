@@ -41,6 +41,7 @@ export default function MapView({ jams }: { jams: Jam[] }) {
         <TileLayer
           attribution='&copy; Google'
           url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+          className="saturate-[1.2] contrast-[1.1]"
         />
 
         {points.map((jam, idx) => {
