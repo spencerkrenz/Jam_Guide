@@ -56,9 +56,9 @@ function createPinIcon(genre: string | null, isNotable: boolean) {
   // Green circle checkmark overlay
   const checkmarkOverlay = isNotable
     ? `
-    <g transform="translate(24, -4)">
-      <circle cx="0" cy="0" r="8" fill="#22c55e" stroke="white" stroke-width="1.5"/>
-      <path d="M-4 -1 L-1 3 L4 -3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(20, 20)">
+      <circle cx="0" cy="0" r="6" fill="#22c55e" stroke="white" stroke-width="1.5"/>
+      <path d="M-3 -1 L-1 2 L3 -2" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
     `
     : "";
