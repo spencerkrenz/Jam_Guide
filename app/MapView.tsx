@@ -20,15 +20,16 @@ export type Jam = {
 // Define colors for each genre
 const GENRE_COLORS: Record<string, { start: string; end: string; label: string }> = {
   bluegrass: { start: "#60a5fa", end: "#2563eb", label: "Bluegrass" }, // Blue
-  old_time: { start: "#fb923c", end: "#ea580c", label: "Old Time" }, // Orange
   jazz: { start: "#c084fc", end: "#9333ea", label: "Jazz" }, // Purple
   jam_band: { start: "#4ade80", end: "#16a34a", label: "Jam Band" }, // Green
-  folk: { start: "#2dd4bf", end: "#0d9488", label: "Folk" }, // Teal
-  country: { start: "#fbbf24", end: "#d97706", label: "Country" }, // Amber
-  rock: { start: "#f87171", end: "#dc2626", label: "Rock" }, // Red
   blues: { start: "#818cf8", end: "#4f46e5", label: "Blues" }, // Indigo
+  old_time: { start: "#fb923c", end: "#ea580c", label: "Old Time" }, // Orange
   celtic: { start: "#34d399", end: "#059669", label: "Celtic" }, // Emerald
   funk: { start: "#f472b6", end: "#db2777", label: "Funk" }, // Pink
+  country: { start: "#facc15", end: "#a16207", label: "Country" }, // Yellow
+  folk: { start: "#2dd4bf", end: "#0d9488", label: "Folk" }, // Teal
+  americana: { start: "#22d3ee", end: "#0e7490", label: "Americana" }, // Cyan
+  rock: { start: "#f87171", end: "#dc2626", label: "Rock" }, // Red
   // Fallback
   default: { start: "#94a3b8", end: "#475569", label: "Other" }, // Slate
 };

@@ -112,19 +112,20 @@ const TIME_OF_DAY_OPTIONS = [
 // primary_genre values from your template (extend as you like)
 const GENRE_OPTIONS = [
   { label: "Bluegrass", value: "bluegrass" },
-  { label: "Old Time", value: "old_time" },
   { label: "Jazz", value: "jazz" },
   { label: "Jam Band", value: "jam_band" },
-  { label: "Folk", value: "folk" },
-  { label: "Singer-Songwriter", value: "singer_songwriter" },
-  { label: "Gypsy Jazz", value: "gypsy_jazz" },
-  { label: "Country", value: "country" },
+  { label: "Blues", value: "blues" },
+  { label: "Old Time", value: "old_time" },
   { label: "Celtic", value: "celtic" },
   { label: "Funk", value: "funk" },
+  { label: "Country", value: "country" },
+  { label: "Folk", value: "folk" },
+  { label: "Americana", value: "americana" },
+  { label: "Rock", value: "rock" },
+  { label: "Singer-Songwriter", value: "singer_songwriter" },
+  { label: "Gypsy Jazz", value: "gypsy_jazz" },
   { label: "Funk Fusion", value: "funk_fusion" },
   { label: "Fusion", value: "fusion" },
-  { label: "Rock", value: "rock" },
-  { label: "Blues", value: "blues" },
   { label: "Free Jazz", value: "free_jazz" },
   { label: "Free Improv", value: "free_improv" },
   { label: "DJ / Electronic", value: "DJ" },
@@ -360,8 +361,8 @@ export default function RegionFilter() {
                     type="button"
                     onClick={() => toggleList("dow", opt.value, selectedDows)}
                     className={`px-2 py-1 rounded text-xs border ${selectedDows.includes(opt.value)
-                        ? "bg-slate-100 text-slate-900 border-slate-100"
-                        : "bg-slate-900 text-slate-100 border-slate-600"
+                      ? "bg-slate-100 text-slate-900 border-slate-100"
+                      : "bg-slate-900 text-slate-100 border-slate-600"
                       }`}
                   >
                     {opt.label}
