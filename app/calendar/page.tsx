@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import RegionFilter from "../RegionFilter";
-
+import { isNotable } from "@/lib/jamUtils";
 
 type Jam = {
   id: number;
@@ -234,6 +234,7 @@ export default async function CalendarPage({
     params.is_house_jam === "true" || params.is_house_jam === "1";
   const includesDancingOnly =
     params.dancing === "true" || params.dancing === "1";
+  const isNotableOnly = params.notable === "1";
 
   const filtersOnlyParams = new URLSearchParams(baseParams.toString());
   filtersOnlyParams.delete("year");
@@ -277,7 +278,11 @@ export default async function CalendarPage({
     console.error("Error loading jams for calendar:", error.message);
   }
 
-  const jams = (data ?? []) as Jam[];
+  let jams = (data ?? []) as Jam[];
+
+  if (isNotableOnly) {
+    jams = jams.filter(isNotable);
+  }
 
   // 3. For this month, compute which jams occur on each exact date
   const jamsByDate: Record<number, Jam[]> = {};
@@ -396,11 +401,10 @@ export default async function CalendarPage({
                   {/* Day number + count */}
                   <div className="mb-1 flex items-center justify-between text-[11px] font-semibold text-amber-300">
                     <span
-                      className={`inline-flex h-7 w-7 items-center justify-center rounded-full ${
-                        isToday
+                      className={`inline-flex h-7 w-7 items-center justify-center rounded-full ${isToday
                           ? "bg-blue-600/90 text-white ring-2 ring-blue-300/60"
                           : ""
-                      }`}
+                        }`}
                     >
                       {day}
                     </span>
@@ -425,15 +429,35 @@ export default async function CalendarPage({
                           const locationLine = [jam.city, jam.region]
                             .filter(Boolean)
                             .join(" • ");
+                          const notable = isNotable(jam);
 
                           return (
                             <div
                               key={jam.id}
                               className="rounded bg-slate-900/80 px-1 py-[4px] text-[10px] text-slate-100"
                             >
-                              <div className="truncate font-semibold">
+                              <div className="truncate font-semibold flex items-center gap-1">
                                 {start && <span>{start} – </span>}
-                                <span>{jam.event_name || "Untitled"}</span>
+                                <span className="truncate">{jam.event_name || "Untitled"}</span>
+                                {notable && (
+                                  <svg
+                                    width="10"
+                                    height="10"
+                                    viewBox="0 0 12 12"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="shrink-0"
+                                  >
+                                    <circle cx="6" cy="6" r="6" fill="#22c55e" />
+                                    <path
+                                      d="M3 6L5 8L9 4"
+                                      stroke="white"
+                                      strokeWidth="1.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                )}
                               </div>
 
                               <div className="mt-[2px] flex items-center justify-between gap-2">

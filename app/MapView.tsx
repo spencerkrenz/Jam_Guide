@@ -5,6 +5,7 @@ import L from "leaflet";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { isNotable } from "@/lib/jamUtils";
 
 export type Jam = {
   id: number | null;
@@ -105,16 +106,7 @@ export default function MapView({ jams }: { jams: Jam[] }) {
   // Initialize notable jams based on names
   useEffect(() => {
     const initialNotable = jams
-      .filter((jam) => {
-        const name = jam.event_name?.toLowerCase() || "";
-        const venue = jam.venue_name?.toLowerCase() || "";
-        return (
-          name.includes("berkeley bluegrass barn") ||
-          name.includes("graton grass") ||
-          (name.includes("blondie") && jam.city === "San Francisco") ||
-          (venue.includes("blondie") && jam.city === "San Francisco")
-        );
-      })
+      .filter((jam) => isNotable(jam))
       .map((j) => j.id)
       .filter((id): id is number => id !== null);
 

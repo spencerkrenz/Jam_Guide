@@ -389,6 +389,38 @@ export default function RegionFilter() {
               </div>
             </section>
 
+            {/* MOST NOTABLE */}
+            <section className="mb-4">
+              <button
+                type="button"
+                onClick={() => toggleBool("notable")}
+                className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md border text-sm font-medium transition-colors ${searchParams.get("notable") === "1"
+                  ? "bg-amber-500/20 border-amber-500 text-amber-200"
+                  : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
+                  }`}
+              >
+                {searchParams.get("notable") === "1" ? (
+                  <>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Showing Most Notable Jam&apos;s Only
+                  </>
+                ) : (
+                  "Show Most Notable Jam's Only"
+                )}
+              </button>
+            </section>
+
             {/* GENRE & SKILL */}
             <section className="mb-4">
               <h3 className="text-sm font-medium text-slate-200 mb-2">

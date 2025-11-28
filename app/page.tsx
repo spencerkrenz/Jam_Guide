@@ -18,6 +18,8 @@ function parseListParam(raw: string | string[] | undefined): string[] {
     .filter(Boolean);
 }
 
+import { isNotable } from "@/lib/jamUtils";
+
 export default async function Home({
   searchParams,
 }: {
@@ -43,6 +45,7 @@ export default async function Home({
     params.is_house_jam === "true" || params.is_house_jam === "1";
   const includesDancingOnly =
     params.dancing === "true" || params.dancing === "1";
+  const isNotableOnly = params.notable === "1";
 
   let query = supabase.from("jams").select("*").eq("status", "active");
 
@@ -69,7 +72,11 @@ export default async function Home({
   }
 
   // Convert Supabase rows to the Jam type that MapView expects
-  const jamsForMap: Jam[] = (data ?? []) as Jam[];
+  let jamsForMap: Jam[] = (data ?? []) as Jam[];
+
+  if (isNotableOnly) {
+    jamsForMap = jamsForMap.filter(isNotable);
+  }
 
   return (
     <main className="mobile-shell relative h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
