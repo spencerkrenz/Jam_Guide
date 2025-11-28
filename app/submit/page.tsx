@@ -106,7 +106,7 @@ const EVENT_KIND_OPTIONS = [
 ];
 const GENRE_OPTIONS = [
   "bluegrass",
-  "old time",
+  "old_time",
   "jazz",
   "jam_band",
   "folk",
