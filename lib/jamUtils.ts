@@ -13,6 +13,7 @@ export function isNotable(jam: JamPartial): boolean {
     return (
         name.includes("berkeley bluegrass barn") ||
         name.includes("graton grass") ||
+        name.includes("fairfax") ||
         (name.includes("blondie") && city === "San Francisco") ||
         (venue.includes("blondie") && city === "San Francisco")
     );
