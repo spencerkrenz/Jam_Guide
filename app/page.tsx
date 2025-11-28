@@ -86,11 +86,11 @@ export default async function Home({
           <div className="topbar-brand flex items-center justify-between md:justify-start gap-3">
             <h1 className="ml-0 md:ml-8">
               <NextImage
-                src="/images/jamguide-logo.png"
+                src="/images/jamguide-logo-transparent.png"
                 alt="JamGuide"
-                width={150}
-                height={50}
-                className="h-12 w-auto rounded-md"
+                width={200}
+                height={80}
+                className="h-20 w-auto"
               />
             </h1>
             <span className="version-pill hidden md:block rounded-md bg-slate-900/70 px-3 py-1 text-[11px] font-medium text-slate-200/80">
