@@ -39,9 +39,10 @@ export default function MapView({ jams }: { jams: Jam[] }) {
       >
         <ZoomControl position="bottomright" />
         <TileLayer
-          attribution='&copy; Google'
-          url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-          className="saturate-[1.2] contrast-[1.1]"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+          className="saturate-[5] contrast-[1.2] hue-rotate-[-15deg]"
         />
 
         {points.map((jam, idx) => {
