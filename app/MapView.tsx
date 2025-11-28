@@ -1,6 +1,7 @@
 "use client";
 
-import { MapContainer, TileLayer, CircleMarker, Popup, ZoomControl } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
+import L from "leaflet";
 import Link from "next/link";
 
 export type Jam = {
@@ -28,6 +29,13 @@ export default function MapView({ jams }: { jams: Jam[] }) {
       ? [points[0].latitude as number, points[0].longitude as number]
       : defaultCenter;
 
+  const pinIcon = L.icon({
+    iconUrl: "/images/orange-pin.svg",
+    iconSize: [28, 40],
+    iconAnchor: [14, 40],
+    popupAnchor: [0, -40],
+  });
+
   return (
     <div className="h-full w-full">
       <MapContainer
@@ -51,10 +59,10 @@ export default function MapView({ jams }: { jams: Jam[] }) {
           const markerKey = hasValidId ? jam.id! : idx;
 
           return (
-            <CircleMarker
+            <Marker
               key={markerKey}
-              center={[jam.latitude as number, jam.longitude as number]}
-              radius={6}
+              position={[jam.latitude as number, jam.longitude as number]}
+              icon={pinIcon}
             >
               <Popup>
                 <div className="text-sm">
@@ -84,7 +92,7 @@ export default function MapView({ jams }: { jams: Jam[] }) {
                   )}
                 </div>
               </Popup>
-            </CircleMarker>
+            </Marker>
           );
         })}
       </MapContainer>
