@@ -13,8 +13,8 @@ export default async function AdminClaimsPage() {
     }
 
     // TODO: Replace with your actual email or a more robust role check
-    const ADMIN_EMAILS = ["spencerkrenz@gmail.com"]; // Add your email here
-    if (!user.email || !ADMIN_EMAILS.includes(user.email)) {
+    const ADMIN_EMAILS = ["spencerkrenz@gmail.com", "spencer@jamguide.org"];
+    if (!user.email || !ADMIN_EMAILS.includes(user.email.toLowerCase())) {
         return (
             <div className="p-8 text-center text-slate-400">
                 <h1 className="text-xl font-bold text-white">Access Denied</h1>
@@ -26,10 +26,7 @@ export default async function AdminClaimsPage() {
 
     const { data: claims } = await supabase
         .from("jam_claims")
-        .select("*, jams(event_name)") // Removed invalid join on profiles
-        // Note: Joining auth.users directly is often restricted. We'll just show the user_id if we can't get email easily, 
-        // or we rely on the user having a public profile. 
-        // For now, let's just fetch claims and jams.
+        .select("*, jams(event_name)")
         .order("created_at", { ascending: false });
 
     // To get user emails, we might need a separate admin function or a view. 
