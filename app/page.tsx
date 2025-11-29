@@ -20,11 +20,19 @@ function parseListParam(raw: string | string[] | undefined): string[] {
 
 import { isNotable } from "@/lib/jamUtils";
 
+import { createClient } from "@/utils/supabase/server";
+import UserMenu from "@/components/UserMenu";
+
 export default async function Home({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   // Resolve the promise-based searchParams (Next 16)
   const params = await searchParams;
 
@@ -105,8 +113,8 @@ export default async function Home({
             </span>
           </div>
 
-          {/* Right side: Filters + Submit + Calendar View */}
-          <div className="topbar-actions grid grid-cols-3 gap-2 md:flex md:gap-2">
+          {/* Right side: Filters + Submit + Calendar View + User Menu */}
+          <div className="topbar-actions grid grid-cols-2 md:flex gap-2 items-center">
             <RegionFilter />
             <Link
               href="/submit"
@@ -118,8 +126,9 @@ export default async function Home({
               href="/calendar"
               className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800 text-center flex items-center justify-center"
             >
-              Calendar View
+              Calendar
             </Link>
+            <UserMenu user={user} />
           </div>
         </header>
 

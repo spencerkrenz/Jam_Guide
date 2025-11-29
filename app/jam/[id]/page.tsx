@@ -484,12 +484,12 @@ export default async function JamDetailPage({
               Claim this jam to manage its details and keep the community updated.
             </p>
             {user ? (
-              <a
-                href={`mailto:hello@jamguide.com?subject=Claim Request: ${encodeURIComponent(jamDisplayName)} (ID: ${jam.id})&body=I would like to claim this jam. My user email is ${user.email}.`}
+              <Link
+                href={`/jam/${jam.id}/claim`}
                 className="inline-block rounded-full border border-slate-700 bg-slate-800 px-5 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 hover:text-white transition-colors"
               >
                 Request to Claim
-              </a>
+              </Link>
             ) : (
               <Link
                 href={`/login?next=/jam/${jam.id}`}
