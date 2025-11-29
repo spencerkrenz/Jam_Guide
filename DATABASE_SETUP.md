@@ -40,3 +40,17 @@ Since we haven't built an automated "Claim Approval" system yet, you can manuall
 5.  Save.
 
 Now that user will see the "Edit Jam" button when they log in!
+
+## 6. Enable Insert Policy (REQUIRED for Submitting Jams)
+
+To allow **anyone** to submit new jams (while keeping editing restricted to owners/admins), run this policy:
+
+```sql
+-- Allow anyone to submit a jam
+CREATE POLICY "Enable insert for everyone" 
+ON jams FOR INSERT 
+TO public 
+WITH CHECK (true);
+```
+
+*Note: The application code will automatically attach the `owner_id` if the user is logged in when they submit. If they are not logged in, `owner_id` will be null, and they will need to "Claim" the jam later to edit it.*

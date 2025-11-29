@@ -2,9 +2,9 @@
 
 "use client";
 
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 type FormState = {
   event_name: string;
@@ -223,10 +223,22 @@ const toNumber = (val: string) => {
 };
 
 export default function SubmitJamPage() {
+  const supabase = createClient();
+  const [user, setUser] = useState<any>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, [supabase.auth]);
 
   const handleChange =
     (field: keyof FormState) =>
@@ -313,6 +325,7 @@ export default function SubmitJamPage() {
       is_house_jam: form.is_house_jam,
       is_festival: form.is_festival,
       status: "active", // auto-publish
+      owner_id: user?.id || null,
     };
 
     const { error: insertError, data } = await supabase
